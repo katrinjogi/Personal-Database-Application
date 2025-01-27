@@ -1,0 +1,295 @@
+mysql> 
+mysql> select "Q1: Find all information about managers who are 25 years old or younger and
+    "> live in California (‘CA’)." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                            |
++----------------------------------------------------------------------------------------------+
+| Q1: Find all information about managers who are 25 years old or younger and
+live in California (‘CA’).     |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select * from Employee E
+    ->   join Manages M on E.eid = M.eID
+    ->   where E.age <= 25
+    ->   and E.residenceState = "CA"
+    ->   ;
++------+-----------+------+--------+----------------+------------+------+-----+------------------+
+| eid  | name      | age  | salary | residenceState | startDate  | eid  | did | managesStartDate |
++------+-----------+------+--------+----------------+------------+------+-----+------------------+
+| 2937 | Sally2937 |   22 |  65000 | CA             | 2017-04-05 | 2937 | 214 | 2017-01-06       |
+| 3172 | Sally3172 |   20 |  36475 | CA             | 2017-10-02 | 3172 | 132 | 2017-05-22       |
++------+-----------+------+--------+----------------+------------+------+-----+------------------+
+2 rows in set (0.00 sec)
+
+mysql> 
+mysql> select "Q2: Find the name, salary, age, and residence state of all 20-year-old or
+    "> younger managers who live in Indiana (‘IN’)" as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                           |
++----------------------------------------------------------------------------------------------+
+| Q2: Find the name, salary, age, and residence state of all 20-year-old or
+younger managers who live in Indiana (‘IN’)     |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.name, E.salary, E.age, E.residenceState from Employee E
+    ->   join Manages M on E.eid = M.eid
+    ->   where E.age <= 20
+    ->   and E.residenceState = "IN"
+    ->   ;
+Empty set (0.00 sec)
+
+mysql> 
+mysql> select "Q3: Find the names and salary of 25-year-old employees who work for departments
+    "> located on the fourth floor in Alaska (‘AK’)." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                   |
++----------------------------------------------------------------------------------------------+
+| Q3: Find the names and salary of 25-year-old employees who work for departments
+located on the fourth floor in Alaska (‘AK’).     |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.name, E.salary from Employee E
+    ->   join WorksFor W on E.eid = W.eid
+    ->   join Department D on W.did = D.did
+    ->   where E.age = 25
+    ->   and D.stateLocated = "AK"
+    ->   and D.floor = 4
+    ->   ;
++-----------+--------+
+| name      | salary |
++-----------+--------+
+| Sally3122 |  21189 |
++-----------+--------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> select "Q4: Find the name, salary, and EID of 49-year-old employees who work for a
+    "> department located in Alaska (‘AK’) but live in California (‘CA’)." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                                       |
++----------------------------------------------------------------------------------------------+
+| Q4: Find the name, salary, and EID of 49-year-old employees who work for a
+department located in Alaska (‘AK’) but live in California (‘CA’).         |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.name, E.salary, E.eid from Employee E
+    ->   join WorksFor W on E.eid = W.eid
+    ->   join Department D on W.did = D.did
+    ->   where E.age = 49
+    ->   and D.stateLocated = "AK"
+    ->   and E.residenceState = "CA"
+    ->   ;
++-----------+--------+------+
+| name      | salary | eid  |
++-----------+--------+------+
+| Sally4280 |  69137 | 4280 |
++-----------+--------+------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> select "Q5: Find the total number of employees." as " " ;
++-----------------------------------------+
+|                                         |
++-----------------------------------------+
+| Q5: Find the total number of employees. |
++-----------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select count(distinct eid) from Employee ;
++---------------------+
+| count(distinct eid) |
++---------------------+
+|               10000 |
++---------------------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> select "Q6: Find the number of employees who are managers." as " " ;
++----------------------------------------------------+
+|                                                    |
++----------------------------------------------------+
+| Q6: Find the number of employees who are managers. |
++----------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select count(distinct E.eid) from Employee E
+    ->   join Manages M on E.eid = M.eid
+    ->   ;
++-----------------------+
+| count(distinct E.eid) |
++-----------------------+
+|                   485 |
++-----------------------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> select "Q7: Find the number of employees who are not managers." as " " ;
++--------------------------------------------------------+
+|                                                        |
++--------------------------------------------------------+
+| Q7: Find the number of employees who are not managers. |
++--------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select count(distinct E.eid) from Employee E
+    ->   where E.eid not in (
+    ->     select M.eid from Manages M
+    ->   ) ;
++-----------------------+
+| count(distinct E.eid) |
++-----------------------+
+|                  9515 |
++-----------------------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> select "Q8: Find the (eid, number) pair for employees who are managing
+    "> two or more departments where 'number' is the number of departments
+    "> they are managing." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                                       |
++----------------------------------------------------------------------------------------------+
+| Q8: Find the (eid, number) pair for employees who are managing
+two or more departments where 'number' is the number of departments
+they are managing. |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.eid, count(*) from Employee E
+    ->   join Manages M on E.eid = M.eid
+    ->   group by E.eid
+    ->   having count(*) >= 2
+    ->   order by E.eid
+    ->   ;
++------+----------+
+| eid  | count(*) |
++------+----------+
+| 1085 |        2 |
+| 1230 |        2 |
+| 1822 |        2 |
+| 2093 |        2 |
+| 2447 |        2 |
+| 5164 |        2 |
+| 6244 |        2 |
+| 6379 |        2 |
+| 7025 |        2 |
+| 7096 |        2 |
+| 7283 |        2 |
+| 7925 |        2 |
+| 8601 |        2 |
+| 9077 |        2 |
+| 9226 |        2 |
++------+----------+
+15 rows in set (0.00 sec)
+
+mysql> 
+mysql> select "Q9: Present the (name1, salary1, name2, salary2), where salary1 is the
+    "> salary of the employee with name1 and salary2 corresponds with name2, of all
+    "> employee pairs where both are living in California (‘CA’), one is a 24-year-old
+    "> manager, the other (who can be any age) is not a manager, and the manager
+    "> earns more than three times the other employee" as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                                                                                                                                                                                                                                                  |
++----------------------------------------------------------------------------------------------+
+| Q9: Present the (name1, salary1, name2, salary2), where salary1 is the
+salary of the employee with name1 and salary2 corresponds with name2, of all
+employee pairs where both are living in California (‘CA’), one is a 24-year-old
+manager, the other (who can be any age) is not a manager, and the manager
+earns more than three times the other employee     |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.name as name1, E.salary as salary1, E2.name as name2, E2.salary as salary2
+    ->  from Employee E
+    ->  cross join Employee E2
+    ->  where E.salary > 3* E2.salary
+    ->  and E.age = 24
+    ->  and E.residenceState = "CA"
+    ->  and E.residencestate = E2.residencestate
+    ->  and E.eid in (
+    ->    select M.eid from Manages M
+    ->  )
+    ->  and E2.eid not in (
+    ->    select M2.eid from Manages M2
+    ->  );
+Empty set (0.00 sec)
+
+mysql> 
+mysql> select "Q10: For each department in Alaska ('AK') that has 25 or more employees
+    "> working for it and a supply budget < $7,000, present the did, budget, and
+    "> number of employees that work in that department." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                                                                                     |
++----------------------------------------------------------------------------------------------+
+| Q10: For each department in Alaska ('AK') that has 25 or more employees
+working for it and a supply budget < $7,000, present the did, budget, and
+number of employees that work in that department. |
++----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select D.did, D.supplyBudget, count(*) from Department D
+    ->   join WorksFor W on D.did = W.did
+    ->   where D.stateLocated = "AK"
+    ->   and D.supplyBudget < 7000
+    ->   group by D.did
+    ->   having count(distinct W.eid) >= 25
+    ->   ;
++-----+--------------+----------+
+| did | supplyBudget | count(*) |
++-----+--------------+----------+
+|  42 |         6904 |       26 |
+| 254 |         5436 |       28 |
+| 365 |         5459 |       26 |
++-----+--------------+----------+
+3 rows in set (0.01 sec)
+
+mysql> 
+mysql> select "Q11: For each state, present the salary of the average 20-year-old manager
+    "> (i.e., average salary of mangers who are 20 years old) who lives in that state
+    "> and the number of such managers. Note: Your results can omit states that do not
+    "> have any 20-year-old managers living in them." as " " ;
++----------------------------------------------------------------------------------------------+
+|                                                                                                                                                                                                                                                                                         |
++----------------------------------------------------------------------------------------------+
+| Q11: For each state, present the salary of the average 20-year-old manager
+(i.e., average salary of mangers who are 20 years old) who lives in that state
+and the number of such managers. Note: Your results can omit states that do not
+have any 20-year-old managers living in them. |
++-----------------------------------------------------------------------------------------------+
+1 row in set, 1 warning (0.00 sec)
+
+mysql> 
+mysql> select E.residenceState, avg(salary), count(distinct E.eid) from Employee E
+    ->   join Manages M on E.eid = M.eid
+    ->   where E.age = 20
+    ->   group by E.residenceState
+    ->   order by E.residenceState
+    ->   ;
++----------------+-------------+-----------------------+
+| residenceState | avg(salary) | count(distinct E.eid) |
++----------------+-------------+-----------------------+
+| AK             |       62004 |                     1 |
+| CA             |       36475 |                     1 |
+| CT             |       62845 |                     1 |
+| HI             |       45921 |                     1 |
+| IL             |     52069.5 |                     2 |
+| MD             |       56635 |                     2 |
+| ME             |       50546 |                     2 |
++----------------+-------------+-----------------------+
+7 rows in set (0.00 sec)
+
+mysql> 
