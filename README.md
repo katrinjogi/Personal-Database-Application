@@ -8,4 +8,7 @@ creating the database,
 creating synthetic data,
 loading the data,
 querying the system,
+foreign keys,
+procedures,
+indices,
 writing complete interactive programs that use the database
